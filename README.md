@@ -123,7 +123,7 @@ stringData:
 All required tools on the Jenkins server are installed automatically using Ansible.
 
 ```bash
-cd ansible-devops
+cd ansible
 ansible-playbook site.yml --ask-become-pass
 ```
 
