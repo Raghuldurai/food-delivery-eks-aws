@@ -38,9 +38,4 @@ spec:
             name: frontend-service
             port:
               number: 80
-# -------------------------------------------------------
-# This Ingress creates a real AWS ALB (Load Balancer)
-# After applying, run:  kubectl get ingress
-# You will see the ALB DNS in the ADDRESS column
-# Example: k8s-default-food123-abc.ap-south-1.elb.amazonaws.com
-# -------------------------------------------------------
+
