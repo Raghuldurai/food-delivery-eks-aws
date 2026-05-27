@@ -1,0 +1,24 @@
+---
+# =============================================================
+#  Role: awscli
+#  Installs AWS CLI v2 from the official Amazon zip installer
+# =============================================================
+
+- name: "[AWS CLI] Install unzip (prerequisite)"
+  apt:
+    name: unzip
+    state: present
+
+- name: "[AWS CLI] Download AWS CLI v2 installer zip"
+  get_url:
+    url: https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip
+    dest: /tmp/awscliv2.zip
+
+- name: "[AWS CLI] Unzip AWS CLI v2 installer"
+  unarchive:
+    src: /tmp/awscliv2.zip
+    dest: /tmp
+    remote_src: yes
+
+- name: "[AWS CLI] Run AWS CLI installer"
+  shell: /tmp/aws/install --update

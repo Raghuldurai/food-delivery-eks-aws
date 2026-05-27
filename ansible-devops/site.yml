@@ -1,0 +1,46 @@
+---
+# =============================================================
+#  DevOps Tools Setup — Ubuntu 24.04
+#  Usage: ansible-playbook site.yml --ask-become-pass
+# =============================================================
+
+- name: Setup DevOps Tools on Ubuntu 24.04
+  hosts: localhost
+  become: yes
+  connection: local
+
+  vars_files:
+    - group_vars/all.yml
+
+  roles:
+    - role: docker
+      tags: docker
+
+    - role: jenkins
+      tags: jenkins
+
+    - role: kubectl
+      tags: kubectl
+
+    - role: terraform
+      tags: terraform
+
+    - role: awscli
+      tags: awscli
+
+  post_tasks:
+    - name: Gather installed tool versions
+      shell: |
+        echo "=== Docker ===" && docker --version
+        echo "=== Docker Compose ===" && docker compose version
+        echo "=== Java ===" && java -version 2>&1
+        echo "=== Jenkins ===" && dpkg -l jenkins | awk '/jenkins/{print $2, $3}'
+        echo "=== kubectl ===" && kubectl version --client --short 2>/dev/null || kubectl version --client
+        echo "=== Terraform ===" && terraform version
+        echo "=== AWS CLI ===" && aws --version
+      register: versions
+      changed_when: false
+
+    - name: Print all versions
+      debug:
+        var: versions.stdout_lines

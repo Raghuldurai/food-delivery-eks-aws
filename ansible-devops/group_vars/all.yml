@@ -1,0 +1,18 @@
+---
+# =============================================================
+#  Global Variables — group_vars/all.yml
+# =============================================================
+
+# The user who will run Docker / Minikube (defaults to the
+# logged-in user; override on the command line with:
+#   -e "target_user=myuser"
+# )
+target_user: "{{ lookup('env', 'USER') }}"
+
+# Jenkins — use 'debian-stable' for LTS (recommended)
+#           or 'debian' for the weekly release line
+jenkins_repo_type: "debian-stable"
+
+# Jenkins GPG key — updated key as of Dec 2025 (expires 2028-12-21)
+jenkins_gpg_url: "https://pkg.jenkins.io/debian-stable/jenkins.io-2026.key"
+jenkins_keyring_path: "/etc/apt/keyrings/jenkins-keyring.asc"

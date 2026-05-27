@@ -1,0 +1,23 @@
+---
+# =============================================================
+#  Role: terraform
+#  Installs Terraform via HashiCorp apt repository
+# =============================================================
+
+- name: "[Terraform] Download and install HashiCorp GPG key"
+  shell: |
+    wget -O - https://apt.releases.hashicorp.com/gpg | gpg --dearmor -o /usr/share/keyrings/hashicorp-archive-keyring.gpg
+  args:
+    creates: /usr/share/keyrings/hashicorp-archive-keyring.gpg
+
+- name: "[Terraform] Add HashiCorp apt repository"
+  shell: |
+    echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/hashicorp-archive-keyring.gpg] https://apt.releases.hashicorp.com $(grep -oP '(?<=UBUNTU_CODENAME=).*' /etc/os-release || lsb_release -cs) main" | tee /etc/apt/sources.list.d/hashicorp.list
+  args:
+    creates: /etc/apt/sources.list.d/hashicorp.list
+
+- name: "[Terraform] Install Terraform"
+  apt:
+    name: terraform
+    state: present
+    update_cache: yes

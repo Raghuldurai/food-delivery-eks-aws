@@ -1,0 +1,63 @@
+---
+# =============================================================
+#  Role: docker
+#  Installs Docker CE + Compose plugin on Ubuntu 24.04
+#  Uses DEB822 .sources format (official Docker docs method)
+# =============================================================
+
+- name: "[Docker] Install prerequisite packages"
+  apt:
+    name:
+      - ca-certificates
+      - curl
+    state: present
+    update_cache: yes
+
+- name: "[Docker] Create /etc/apt/keyrings directory"
+  shell: install -m 0755 -d /etc/apt/keyrings
+  args:
+    creates: /etc/apt/keyrings
+
+- name: "[Docker] Download Docker GPG key"
+  shell: |
+    curl -fsSL https://download.docker.com/linux/ubuntu/gpg \
+      -o /etc/apt/keyrings/docker.asc
+    chmod a+r /etc/apt/keyrings/docker.asc
+  args:
+    creates: /etc/apt/keyrings/docker.asc
+
+- name: "[Docker] Add Docker repository (DEB822 format)"
+  shell: |
+    tee /etc/apt/sources.list.d/docker.sources <<EOF
+    Types: deb
+    URIs: https://download.docker.com/linux/ubuntu
+    Suites: $(. /etc/os-release && echo "${UBUNTU_CODENAME:-$VERSION_CODENAME}")
+    Components: stable
+    Architectures: $(dpkg --print-architecture)
+    Signed-By: /etc/apt/keyrings/docker.asc
+    EOF
+  args:
+    creates: /etc/apt/sources.list.d/docker.sources
+
+- name: "[Docker] Install Docker CE and plugins"
+  apt:
+    name:
+      - docker-ce
+      - docker-ce-cli
+      - containerd.io
+      - docker-buildx-plugin
+      - docker-compose-plugin
+    state: present
+    update_cache: yes
+
+- name: "[Docker] Enable and start Docker service"
+  service:
+    name: docker
+    state: started
+    enabled: yes
+
+- name: "[Docker] Add {{ target_user }} to docker group"
+  user:
+    name: "{{ target_user }}"
+    groups: docker
+    append: yes

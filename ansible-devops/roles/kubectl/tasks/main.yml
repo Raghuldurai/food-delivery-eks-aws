@@ -1,0 +1,29 @@
+---
+# =============================================================
+#  Role: kubectl
+#  Installs the latest stable kubectl binary
+# =============================================================
+
+- name: "[kubectl] Download kubectl binary"
+  shell: |
+    curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
+  args:
+    chdir: /tmp
+
+- name: "[kubectl] Download kubectl checksum file"
+  shell: |
+    curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl.sha256"
+  args:
+    chdir: /tmp
+
+- name: "[kubectl] Verify kubectl checksum"
+  shell: |
+    echo "$(cat kubectl.sha256)  kubectl" | sha256sum --check
+  args:
+    chdir: /tmp
+
+- name: "[kubectl] Install kubectl to /usr/local/bin"
+  shell: |
+    install -o root -g root -m 0755 kubectl /usr/local/bin/kubectl
+  args:
+    chdir: /tmp

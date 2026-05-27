@@ -1,0 +1,47 @@
+---
+# =============================================================
+#  Role: jenkins
+#  Installs Jenkins LTS on Ubuntu 24.04
+#  Uses the updated 2026 GPG key (valid from Dec 2025)
+# =============================================================
+
+- name: "[Jenkins] Install fontconfig and Java 21 JRE"
+  apt:
+    name:
+      - fontconfig
+      - openjdk-21-jre
+    state: present
+    update_cache: yes
+
+- name: "[Jenkins] Download Jenkins GPG key (2026 key)"
+  shell: |
+    wget -O /etc/apt/keyrings/jenkins-keyring.asc \
+      https://pkg.jenkins.io/debian-stable/jenkins.io-2026.key
+  args:
+    creates: /etc/apt/keyrings/jenkins-keyring.asc
+
+- name: "[Jenkins] Add Jenkins apt repository"
+  shell: |
+    echo "deb [signed-by=/etc/apt/keyrings/jenkins-keyring.asc]" \
+      https://pkg.jenkins.io/debian-stable binary/ | tee \
+      /etc/apt/sources.list.d/jenkins.list > /dev/null
+  args:
+    creates: /etc/apt/sources.list.d/jenkins.list
+
+- name: "[Jenkins] Install Jenkins"
+  apt:
+    name: jenkins
+    state: present
+    update_cache: yes
+
+- name: "[Jenkins] Add jenkins user to docker group"
+  user:
+    name: jenkins
+    groups: docker
+    append: yes
+
+- name: "[Jenkins] Enable and start Jenkins service"
+  service:
+    name: jenkins
+    state: started
+    enabled: yes
