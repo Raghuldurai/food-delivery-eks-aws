@@ -118,6 +118,26 @@ stringData:
 
 ---
 
+### ⚙️ Jenkins Server Setup (Ansible)
+
+All required tools on the Jenkins server are installed automatically using Ansible.
+
+```bash
+cd ansible-devops
+ansible-playbook site.yml --ask-become-pass
+```
+
+This installs the following on your Ubuntu 24.04 Jenkins server:
+
+| Tool | Role |
+|---|---|
+| Docker + Compose | Build and push images |
+| Jenkins LTS | CI pipeline |
+| kubectl | Interact with EKS |
+| Terraform | Provision infrastructure |
+| AWS CLI | AWS authentication |
+
+
 ### Step 1 — Provision Infrastructure (Terraform)
 
 > Three-step apply is required on first run — VPC must exist before EKS, and EKS must exist before the Kubernetes/Helm providers can initialise for ALB Controller and ArgoCD.
